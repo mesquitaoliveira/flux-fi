@@ -16,11 +16,9 @@ import {
 } from "@/components/ui/tooltip";
 
 import { QrCode, Banknote } from "lucide-react";
-import { useAccount } from "wagmi";
 import { PixModal } from "@/components/layout/pixModal"; // Certifique-se do caminho correto
 
 export function Account() {
-  const { address } = useAccount();
   const [showModal, setShowModal] = useState(false);
 
   const openModal = () => setShowModal(true);
