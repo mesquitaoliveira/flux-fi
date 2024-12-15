@@ -14,7 +14,7 @@ export const generateQrCode = async (
 ): Promise<QrCodeResponse> => {
   try {
     const response = await axios.post(
-      "http://localhost:5000/api/generate-qr-code",
+      "/api/generate-qr-code",
       { value }
     );
     return response.data;
