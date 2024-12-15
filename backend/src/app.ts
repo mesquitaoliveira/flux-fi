@@ -4,7 +4,14 @@ import { qrCodeRouter } from "./routes/qrCodeRoute";
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://flux-fi.vercel.app",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rotas
