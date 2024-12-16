@@ -14,15 +14,28 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { useAccount } from "wagmi";
 
-import { QrCode, Banknote } from "lucide-react";
-import { PixModal } from "@/components/layout/pixModal"; // Certifique-se do caminho correto
+import { QrCode, Banknote, Repeat2 } from "lucide-react";
+import { PixModal } from "@/components/layout/pixModal";
+import { SwapBrlToErc20Modal } from "@/components/layout/swap-brl-to-erc20";
+import { useRemainingMintable } from "@/api/abi/brl-remainingMintable";
 
 export function Account() {
-  const [showModal, setShowModal] = useState(false);
+  const { address } = useAccount(); // Obtém o endereço conectado
+  const [showPixModal, setShowPixModal] = useState(false);
+  const [showSwapModal, setShowSwapModal] = useState(false);
 
-  const openModal = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
+  const openPixModal = () => setShowPixModal(true);
+  const closePixModal = () => setShowPixModal(false);
+
+  const openSwapModal = () => setShowSwapModal(true);
+  const closeSwapModal = () => setShowSwapModal(false);
+
+  // Consulta o saldo restante utilizando o hook personalizado
+  const { remainingMintable, isLoading } = useRemainingMintable({
+    wallet: address || ""
+  });
 
   return (
     <div className="p-2">
@@ -30,7 +43,9 @@ export function Account() {
       {/* Saldo em R$ */}
       <div className="text-left">
         <h1 className="text-2xl font-bold">Saldo total</h1>
-        <p className="text-4xl font-extrabold text-black">R$ 10.000,00</p>
+        <p className="text-4xl font-extrabold text-black">
+          {isLoading ? "Carregando..." : `R$ ${remainingMintable}`}
+        </p>
       </div>
 
       {/* Cards */}
@@ -61,15 +76,18 @@ export function Account() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold">R$ 50.000,00</p>
+            <p className="text-2xl font-semibold">
+              {isLoading ? "Carregando..." : `R$ ${remainingMintable}`}
+            </p>
             <p className="text-gray-500">Conta bancária</p>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex justify-between items-center">
+            {/* Botão de Depósito Pix */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={openModal}
+                    onClick={openPixModal}
                     className="w-10 h-10 text-teal-900 border border-teal-900 bg-blue-50 hover:bg-teal-900 hover:text-white"
                   >
                     <Banknote />
@@ -77,6 +95,23 @@ export function Account() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Depósito pix</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* Novo botão para conversão */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={openSwapModal}
+                    className="w-10 h-10 text-purple-900 border border-purple-900 bg-purple-50 hover:bg-purple-900 hover:text-white"
+                  >
+                    <Repeat2 />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Converter para BRL-ERC20</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -101,10 +136,9 @@ export function Account() {
         </Card>
       </div>
 
-      {/* Modal */}
-      {showModal && (
-          <PixModal onClose={closeModal} />
-      )}
+      {/* Modais */}
+      {showPixModal && <PixModal onClose={closePixModal} />}
+      {showSwapModal && <SwapBrlToErc20Modal onClose={closeSwapModal} />}
     </div>
   );
 }
