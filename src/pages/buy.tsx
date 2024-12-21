@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -20,6 +20,7 @@ import tokenList from "./token-list.json";
 import { formatInputValue } from "@/utils/validate-input/input-swap";
 import { useBalance, useAccount } from "wagmi";
 import { formatUnits } from "viem";
+import { useTokenPrices } from "@/api/abi/token-price";
 
 interface Token {
   img: string;
@@ -29,22 +30,17 @@ interface Token {
   decimals: number;
 }
 
-interface TokenSelectorProps {
-  token: Token | null;
-  onClick: () => void;
-}
-
-const TokenSelector = ({ token, onClick }: TokenSelectorProps) => (
+const TokenSelector = (props: { token: Token | null; onClick: () => void }) => (
   <div
     className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100 rounded-md"
-    onClick={onClick}
+    onClick={props.onClick}
   >
-    {token ? (
+    {props.token ? (
       <>
-        <img src={token.img} alt="" className="w-6 h-6 rounded-full" />
+        <img src={props.token.img} alt="" className="w-6 h-6 rounded-full" />
         <div className="flex flex-col">
-          <span className="text-sm text-black">{token.name}</span>
-          <span className="text-sm text-black">{token.ticker}</span>
+          <span className="text-sm text-black">{props.token.name}</span>
+          <span className="text-sm text-black">{props.token.ticker}</span>
         </div>
       </>
     ) : (
@@ -53,39 +49,28 @@ const TokenSelector = ({ token, onClick }: TokenSelectorProps) => (
   </div>
 );
 
-interface TokenInputProps {
+const TokenInput = (props: {
   token: Token | null;
   onClick: () => void;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   wallet: string | null;
-}
-
-const TokenInput = ({
-  token,
-  onClick,
-  value,
-  onChange,
-  wallet
-}: TokenInputProps) => {
+  isLoading?: boolean;
+}) => {
   const getTokenBalance = (tokenAddress: string | undefined) => {
-    if (!wallet || !tokenAddress) return "0";
+    if (!props.wallet || !tokenAddress) return "0";
 
     const {
       data: balanceData,
       isError,
       isLoading
     } = useBalance({
-      address: wallet as `0x${string}`,
+      address: props.wallet as `0x${string}`,
       token: tokenAddress as `0x${string}`
     });
 
-    if (isLoading) {
-      return "Carregando...";
-    }
-    if (isError) {
-      return "Erro ao carregar";
-    }
+    if (isLoading) return "Carregando...";
+    if (isError) return "Erro ao carregar";
     return balanceData
       ? `${parseFloat(
           formatUnits(balanceData.value, balanceData.decimals)
@@ -96,16 +81,19 @@ const TokenInput = ({
       : "0";
   };
 
-  const balance = token ? getTokenBalance(token.address) : "0";
+  const balance = props.token ? getTokenBalance(props.token.address) : "0";
 
   return (
     <div className="flex justify-between gap-2 p-2 bg-gray-200 rounded-lg">
       <Input
         type="text"
-        value={value}
-        onChange={onChange}
+        value={props.value}
+        onChange={props.onChange}
         placeholder="0,00"
-        className="w-full h-19 border-none text-left text-lg text-black"
+        className={`w-full h-19 border-none text-left text-lg text-black ${
+          props.isLoading ? "animate-pulse text-gray-400" : ""
+        }`}
+        readOnly={!props.onChange}
       />
       <div className="flex-col items-center justify-between gap-4">
         <p className="text-sm text-gray-500 text-right pb-1">
@@ -115,12 +103,16 @@ const TokenInput = ({
           <Button
             variant="outline"
             className="flex items-center gap-1 rounded-full"
-            onClick={onClick}
+            onClick={props.onClick}
           >
-            {token ? (
+            {props.token ? (
               <>
-                <img src={token.img} alt="" className="w-6 h-6 rounded-full" />
-                <span className="text-black">{token.ticker}</span>
+                <img
+                  src={props.token.img}
+                  alt=""
+                  className="w-6 h-6 rounded-full"
+                />
+                <span className="text-black">{props.token.ticker}</span>
                 <ChevronDown size={"20"} className="text-black" />
               </>
             ) : (
@@ -137,15 +129,19 @@ const TokenInput = ({
 };
 
 export default function Buy() {
-  const { address } = useAccount(); // Obtém o endereço da wallet conectada
-  const wallet = address ?? null; // Define wallet como null se não houver conexão
+  const { address } = useAccount();
+  const wallet = address ?? null;
 
   const [tokenOne, setTokenOne] = useState<Token | null>(tokenList[0]);
   const [tokenTwo, setTokenTwo] = useState<Token | null>(tokenList[1]);
-  const [valueOne, setValueOne] = useState<string>("");
-  const [valueTwo, setValueTwo] = useState<string>("");
+  const [valueOne, setValueOne] = useState<string>("0");
+  const [valueTwo, setValueTwo] = useState<string>("0");
+
   const [isOpen, setIsOpen] = useState(false);
   const [changeToken, setChangeToken] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { getPriceInToken } = useTokenPrices();
 
   const openModal = (tokenNumber: number) => {
     setChangeToken(tokenNumber);
@@ -153,21 +149,24 @@ export default function Buy() {
   };
 
   const handleTokenSelect = (token: Token) => {
-    if (changeToken === 1) {
-      if (tokenTwo && token.ticker === tokenTwo.ticker) {
-        setTokenOne(null);
-      } else {
-        setTokenOne(token);
-      }
-    } else {
-      if (tokenOne && token.ticker === tokenOne.ticker) {
-        setTokenTwo(null);
-      } else {
-        setTokenTwo(token);
-      }
-    }
+    if (changeToken === 1) setTokenOne(token);
+    else setTokenTwo(token);
+
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const fetchConversionRate = async () => {
+      if (tokenOne && tokenTwo && parseFloat(valueOne) > 0) {
+        setIsLoading(true);
+        const price = await getPriceInToken(tokenOne.ticker, tokenTwo.ticker);
+        setValueTwo((parseFloat(valueOne) * parseFloat(price)).toFixed(4));
+        setIsLoading(false);
+      }
+    };
+
+    fetchConversionRate();
+  }, [tokenOne, tokenTwo, valueOne, getPriceInToken]);
 
   return (
     <div className="relative flex justify-center items-center min-h-screen">
@@ -192,7 +191,7 @@ export default function Buy() {
         </DialogContent>
       </Dialog>
 
-      <Card className="relative w-[400px]  text-white">
+      <Card className="relative w-[400px] text-black">
         <CardHeader className="flex justify-between">
           <CardTitle>Swap</CardTitle>
         </CardHeader>
@@ -208,8 +207,9 @@ export default function Buy() {
             token={tokenTwo}
             onClick={() => openModal(2)}
             value={valueTwo}
-            onChange={(e) => setValueTwo(formatInputValue(e.target.value))}
             wallet={wallet}
+            isLoading={isLoading}
+            onChange={() => {}}
           />
         </CardContent>
         <CardFooter>

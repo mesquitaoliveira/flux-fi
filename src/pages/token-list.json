@@ -1,23 +1,23 @@
 [
   {
-    "ticker": "BRL-t",
+    "ticker": "BRL",
     "img": "./src/assets/coins/brl-coin.png",
     "name": "BRL Token Test",
     "address": "0xF1D269B815D66c28D1e37EF952E57cEa1002FE2e",
     "decimals": 6
   },
   {
-    "ticker": "WXRPL",
-    "img": "./src/assets/coins/xrpl-icon.png",
-    "name": "WXRPL Token",
-    "address": "0x0000000000000000000000000000000000000000",
+    "ticker": "USDC",
+    "img": "./src/assets/coins/usdc-coin.png",
+    "name": "Circle USDC",
+    "address": "0xFB3f9101C7cB845958b7649ab1d52F2a30ca4294",
     "decimals": 18
   },
   {
-    "ticker": "USDC",
-    "img": ".png",
-    "name": "Circle USDC",
-    "address": "0xFB3f9101C7cB845958b7649ab1d52F2a30ca4294",
+    "ticker": "WXRP",
+    "img": "./src/assets/coins/xrpl-icon.png",
+    "name": "WXRPL Token",
+    "address": "0xf0e49fc23ABAE8289d4F10DFE5e0FE642EDa1058",
     "decimals": 18
   },
   {
