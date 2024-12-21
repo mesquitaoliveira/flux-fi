@@ -30,22 +30,24 @@ interface Token {
   decimals: number;
 }
 
-const TokenSelector = (props: { token: Token | null; onClick: () => void }) => (
+const TokenSelector = (props: {
+  token: Token;
+  onClick: () => void;
+  disabled: boolean;
+}) => (
   <div
-    className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100 rounded-md"
-    onClick={props.onClick}
+    className={`flex items-center gap-2 p-2 rounded-md ${
+      props.disabled
+        ? "bg-gray-300 cursor-not-allowed opacity-50"
+        : "cursor-pointer hover:bg-gray-100"
+    }`}
+    onClick={!props.disabled ? props.onClick : undefined}
   >
-    {props.token ? (
-      <>
-        <img src={props.token.img} alt="" className="w-6 h-6 rounded-full" />
-        <div className="flex flex-col">
-          <span className="text-sm text-black">{props.token.name}</span>
-          <span className="text-sm text-black">{props.token.ticker}</span>
-        </div>
-      </>
-    ) : (
-      <span className="text-sm text-black">Selecione</span>
-    )}
+    <img src={props.token.img} alt="" className="w-6 h-6 rounded-full" />
+    <div className="flex flex-col">
+      <span className="text-sm text-black">{props.token.name}</span>
+      <span className="text-sm text-black">{props.token.ticker}</span>
+    </div>
   </div>
 );
 
@@ -149,6 +151,9 @@ export default function Buy() {
   };
 
   const handleTokenSelect = (token: Token) => {
+    if (changeToken === 1 && token.address === tokenTwo?.address) return;
+    if (changeToken === 2 && token.address === tokenOne?.address) return;
+
     if (changeToken === 1) setTokenOne(token);
     else setTokenTwo(token);
 
@@ -160,7 +165,11 @@ export default function Buy() {
       if (tokenOne && tokenTwo && parseFloat(valueOne) > 0) {
         setIsLoading(true);
         const price = await getPriceInToken(tokenOne.ticker, tokenTwo.ticker);
-        setValueTwo((parseFloat(valueOne) * parseFloat(price)).toFixed(4));
+        setValueTwo(
+          (parseFloat(valueOne) * parseFloat(price))
+            .toFixed(8)
+            .replace(".", ",")
+        );
         setIsLoading(false);
       }
     };
@@ -169,7 +178,7 @@ export default function Buy() {
   }, [tokenOne, tokenTwo, valueOne, getPriceInToken]);
 
   return (
-    <div className="relative flex justify-center items-center min-h-screen">
+    <div className="relative flex justify-center items-center pt-4">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="absolute top-2/3 left-[57%] sm:max-w-[400px] sm:max-h-[500px] bg-white rounded-lg shadow-lg">
           <DialogHeader>
@@ -184,6 +193,11 @@ export default function Buy() {
                   key={i}
                   token={token}
                   onClick={() => handleTokenSelect(token)}
+                  disabled={
+                    (changeToken === 1 &&
+                      token.address === tokenTwo?.address) ||
+                    (changeToken === 2 && token.address === tokenOne?.address)
+                  }
                 />
               ))}
             </div>
@@ -200,7 +214,11 @@ export default function Buy() {
             token={tokenOne}
             onClick={() => openModal(1)}
             value={valueOne}
-            onChange={(e) => setValueOne(formatInputValue(e.target.value))}
+            onChange={(e) => {
+              const rawValue = e.target.value;
+              const formattedValue = formatInputValue(rawValue);
+              setValueOne(formattedValue);
+            }}
             wallet={wallet}
           />
           <TokenInput
