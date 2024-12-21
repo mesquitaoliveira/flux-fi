@@ -22,7 +22,6 @@ import { SwapBrlToErc20Modal } from "@/components/layout/swap-brl-to-erc20";
 import { useRemainingMintable } from "@/api/abi/brl-remainingMintable";
 
 export function Account() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { address } = useAccount(); // Obtém o endereço conectado
   console.log("Endereço conectado:", address);
   const [showPixModal, setShowPixModal] = useState(false);
