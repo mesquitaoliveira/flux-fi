@@ -23,6 +23,7 @@ import { useRemainingMintable } from "@/api/abi/brl-remainingMintable";
 
 export function Account() {
   const { address } = useAccount(); // Obtém o endereço conectado
+  console.log("Endereço conectado:", address);
   const [showPixModal, setShowPixModal] = useState(false);
   const [showSwapModal, setShowSwapModal] = useState(false);
 
