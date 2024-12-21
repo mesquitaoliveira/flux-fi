@@ -1,0 +1,37 @@
+[
+  {
+    "ticker": "BRL",
+    "img": "/assets/coins/brl-coin.png",
+    "name": "BRL Token Test",
+    "address": "0xF1D269B815D66c28D1e37EF952E57cEa1002FE2e",
+    "decimals": 6
+  },
+  {
+    "ticker": "USDC",
+    "img": "/assets/coins/usdc-coin.png",
+    "name": "Circle USDC",
+    "address": "0xFB3f9101C7cB845958b7649ab1d52F2a30ca4294",
+    "decimals": 18
+  },
+  {
+    "ticker": "WXRP",
+    "img": "/assets/coins/xrpl-icon.png",
+    "name": "WXRPL Token",
+    "address": "0xf0e49fc23ABAE8289d4F10DFE5e0FE642EDa1058",
+    "decimals": 18
+  },
+  {
+    "ticker": "WETH",
+    "img": "/assets/coins/weth-coin.png",
+    "name": "Wrapped Ethereum",
+    "address": "0x2A40A6D0Fb23cf12F550BaFfd54fb82b07a21BDe",
+    "decimals": 18
+  },
+  {
+    "ticker": "WBTC",
+    "img": "/assets/coins/wbtc-coin.png",
+    "name": "Wrapped Bitcoin",
+    "address": "0x22e7163f6ED77D7ff19608392f06fdB4b12A0686",
+    "decimals": 18
+  }
+]
