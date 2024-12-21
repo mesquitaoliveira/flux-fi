@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "dist/assets/**",
+      "src": "dist/assets/coins/**",
       "use": "@vercel/static"
     }
   ],
