@@ -1,4 +1,4 @@
-[Repositóeio Smart Contract - Call](https://github.com/mesquitaoliveira/fluxfi-smart-contract-call)
+[Repositório Smart Contract - Call](https://github.com/mesquitaoliveira/fluxfi-smart-contract-call)
 
 Swap exemplo:
 ```bash
