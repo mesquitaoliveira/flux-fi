@@ -1,3 +1,27 @@
+[Repositório token-price-oracle](https://github.com/mesquitaoliveira/token-price-oracle)
+Serviço remponsável por pegar a cotação atualizada dos tokens
+
+[`GET`](https://token-price-oracle.vercel.app/api/token-price?ticker=brl)
+
+```js
+{
+  "ticker": "BRL",
+  "name": "BRL Token Test",
+  "decimals": 6,
+  "usdPrice": "0.164312000"
+}
+```
+[`GET`](https://token-price-oracle.vercel.app/api/token-price?ticker=wxrp)
+
+```js
+{
+  "ticker": "WXRP",
+  "name": "Ripple",
+  "decimals": 18,
+  "usdPrice": "2.177310000"
+}
+```
+
 [Repositório Smart Contract - Call](https://github.com/mesquitaoliveira/fluxfi-smart-contract-call)
 
 Swap exemplo:
