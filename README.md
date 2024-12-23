@@ -1,5 +1,5 @@
+### Serviço remponsável por pegar a cotação atualizada dos tokens usando oraculos de outras redes EVM
 [Repositório token-price-oracle](https://github.com/mesquitaoliveira/token-price-oracle)
-Serviço remponsável por pegar a cotação atualizada dos tokens
 
 [`GET`](https://token-price-oracle.vercel.app/api/token-price?ticker=brl)
 
@@ -22,7 +22,13 @@ Serviço remponsável por pegar a cotação atualizada dos tokens
 }
 ```
 
+#### Inspiração - Balancer V2 e ER4626
 [Repositório Smart Contract - Call](https://github.com/mesquitaoliveira/fluxfi-smart-contract-call)
+Responsabilidade:
+- `Swap`
+- `Criar Pool de liquidez`: usar 50/50 WEIGHT pode ser mais fácil para realizar os cálculos, porém aceita proporções diferentes
+- `Adicionar Liquidez`
+- `Remover liquidez`
 
 Swap exemplo:
 ```bash
