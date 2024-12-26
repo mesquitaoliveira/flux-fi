@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useAccount } from "wagmi";
 
-import { QrCode, Banknote, Repeat2 } from "lucide-react";
+import { QrCode, Repeat2, Component } from "lucide-react";
 import { PixModal } from "@/components/layout/pixModal";
 import { SwapBrlToErc20Modal } from "@/components/layout/swap-brl-to-erc20";
 import { useRemainingMintable } from "@/api/abi/brl-remainingMintable";
@@ -91,7 +91,7 @@ export function Account() {
                     onClick={openPixModal}
                     className="w-10 h-10 text-teal-900 border border-teal-900 bg-blue-50 hover:bg-teal-900 hover:text-white"
                   >
-                    <Banknote />
+                    <Component />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>

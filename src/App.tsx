@@ -4,8 +4,9 @@ import Sidebar from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import Dashboard from "@/pages/dashboard";
 import Buy from "@/pages/buy";
-import Loan from "@/pages/loan"
-import {Account} from "@/pages/account";
+import Loan from "@/pages/loan";
+import { Account } from "@/pages/account";
+import Pools from "@/pages/pools";
 
 function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -22,9 +23,11 @@ function App() {
           <main className="flex-1 p-4">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/buy" element={<Buy />} />
+              <Route path="/swap" element={<Buy />} />
               <Route path="/loan" element={<Loan />} />
+              <Route path="/pools" element={<Pools />} />
               <Route path="/account" element={<Account />} />
+              <Route path="*" element={<h1>Not Found</h1>} />
             </Routes>
           </main>
         </div>

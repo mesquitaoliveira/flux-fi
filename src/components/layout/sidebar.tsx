@@ -2,10 +2,11 @@ import {
   LayoutDashboard,
   ChevronsRight,
   ChevronsLeft,
-  CircleDollarSign,
+  Repeat,
   HandCoins,
   LogOut,
-  Wallet
+  Wallet,
+  WavesLadder
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -38,12 +39,13 @@ const Sidebar = ({
     } ${isActive ? "bg-[hsl(var(--custom-teal))] text-white" : ""}`;
 
     return (
-      <li className={`${isCollapsed ? "" : "w-full"}`}>
+      <li className={`${isCollapsed ? "" : "h-8 w-full"}`}>
         <Tooltip>
           <TooltipTrigger asChild>
             <Link to={to} className={linkClasses}>
               <Icon
                 strokeWidth={1.25}
+                size={isCollapsed ? 20 : 20}
                 className="text-lg transition-all duration-300"
               />
               {!isCollapsed && (
@@ -73,7 +75,7 @@ const Sidebar = ({
         {/* Botão de colapso no topo */}
         <Button
           onClick={onToggle}
-          className="absolute top-4 -right-4 bg-white border border-gray-200 text-black w-5 h-5 rounded-full flex items-center justify-center shadow hover:bg-gray-100"
+          className="absolute top-4 -right-4 bg-white border border-gray-200 text-black w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-gray-100"
         >
           {isCollapsed ? (
             <ChevronsRight size={16} />
@@ -107,9 +109,10 @@ const Sidebar = ({
 
         {/* Navegação */}
         <nav className="flex-1 flex flex-col items-center p-2">
-          <ul className="flex flex-col items-center space-y-4 w-full">
+          <ul className="flex flex-col items-center space-y-4 h-8 w-full">
             {renderNavItem("/", LayoutDashboard, "Dashboard")}
-            {renderNavItem("/buy", CircleDollarSign, "Comprar")}
+            {renderNavItem("/swap", Repeat, "Swap")}
+            {renderNavItem("/pools", WavesLadder, "Pools")}
             {renderNavItem("/loan", HandCoins, "Empréstimo")}
             {renderNavItem("/account", Wallet, "Conta")}
           </ul>
