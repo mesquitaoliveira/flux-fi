@@ -18,7 +18,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronDown } from "lucide-react";
 import tokenList from "./token-list.json";
 import { formatInputValue } from "@/utils/validate-input/input-swap";
-import { useBalance, useAccount } from "wagmi";
+import { useBalance, useAccount, useConnect } from "wagmi";
+import { injected } from "wagmi/connectors";
 import { formatUnits } from "viem";
 import { useTokenPrices } from "@/api/abi/token-price";
 
@@ -132,6 +133,8 @@ const TokenInput = (props: {
 
 export default function Buy() {
   const { address } = useAccount();
+  const { connect } = useConnect();
+  
   const wallet = address ?? null;
 
   const [tokenOne, setTokenOne] = useState<Token | null>(tokenList[0]);
@@ -231,8 +234,11 @@ export default function Buy() {
           />
         </CardContent>
         <CardFooter>
-          <Button className="w-full bg-teal-800 text-white hover:bg-teal-700">
-            Connect Wallet
+          <Button
+            className="w-full bg-teal-800 text-white hover:bg-teal-700"
+            onClick={!wallet ? () => connect({ connector: injected() }) : undefined}
+          >
+            {wallet ? "Swap" : "Connect Wallet"}
           </Button>
         </CardFooter>
       </Card>

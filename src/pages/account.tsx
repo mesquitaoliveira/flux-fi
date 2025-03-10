@@ -15,8 +15,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip";
 import { useAccount } from "wagmi";
-
-import { QrCode, Banknote, Repeat2 } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { PixModal } from "@/components/layout/pixModal";
 import { SwapBrlToErc20Modal } from "@/components/layout/swap-brl-to-erc20";
 import { useRemainingMintable } from "@/api/abi/brl-remainingMintable";
@@ -63,7 +62,7 @@ export function Account() {
           </CardContent>
           <CardFooter>
             <Button className="w-10 h-10 text-teal-900 border border-teal-900 bg-blue-50 hover:bg-teal-900 hover:text-white">
-              <QrCode />
+              <Icon icon="ic:round-qrcode" width="112" height="112" />
             </Button>
           </CardFooter>
         </Card>
@@ -91,7 +90,7 @@ export function Account() {
                     onClick={openPixModal}
                     className="w-10 h-10 text-teal-900 border border-teal-900 bg-blue-50 hover:bg-teal-900 hover:text-white"
                   >
-                    <Banknote />
+                    <Icon icon="ri:pix-fill" width="112" height="112" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -108,7 +107,11 @@ export function Account() {
                     onClick={openSwapModal}
                     className="w-10 h-10 text-purple-900 border border-purple-900 bg-purple-50 hover:bg-purple-900 hover:text-white"
                   >
-                    <Repeat2 />
+                    <Icon
+                      icon="lucide-lab:coins-exchange"
+                      width="96"
+                      height="96"
+                    />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
