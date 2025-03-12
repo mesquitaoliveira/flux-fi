@@ -1,53 +1,96 @@
+const API_PRICE = import.meta.env.ORACLE_API_ENDPOINT;
+
 type PriceCache = {
   [key: string]: { usdPrice: string; timestamp: number };
 };
 
+/**
+ * Hook para buscar preços de tokens usando um único endpoint que retorna todos os preços de uma só vez.
+ */
 export const useTokenPrices = () => {
-  const cache: PriceCache = {}; // Cache em memória para preços
+  // Cache em memória para preços (chave: tokenId em lowercase)
+  const cache: PriceCache = {};
 
-  const fetchPrice = async (token: string): Promise<string> => {
-    // Use cache se o preço tiver sido buscado recentemente (ex: últimos 60 segundos)
+  // Tempo de última atualização do cache
+  let lastFetchTime = 0;
+
+  // Intervalo de tempo, em ms, para considerar o cache válido
+  const CACHE_DURATION = 5000; // 5 segundos
+
+  /**
+   * Faz a requisição do preço de todos os tokens caso o cache esteja expirado.
+   */
+  const fetchAllPrices = async () => {
     const now = Date.now();
-    if (cache[token] && now - cache[token].timestamp < 60000) {
-      return cache[token].usdPrice;
+
+    // Se ainda não expirou o cache, não faz uma nova chamada.
+    if (now - lastFetchTime < CACHE_DURATION) {
+      return;
     }
 
     try {
-      const response = await fetch(
-        `https://token-price-oracle.vercel.app/api/token-price?ticker=${token}`
-      );
+      const response = await fetch(API_PRICE);
       const data = await response.json();
-      if (!data || !data.usdPrice) {
-        throw new Error("Resposta inválida da API");
-      }
 
-      // Armazena no cache
-      cache[token] = { usdPrice: data.usdPrice, timestamp: now };
-      return data.usdPrice;
+      // Atualiza o cache com os dados retornados
+      // Aqui assumimos que "data" tem formato conforme o exemplo:
+      // {
+      //   brl: { ticker: "BRL", usdPrice: "0.17", ... },
+      //   usdc: { ticker: "USDC", usdPrice: "0.99", ... },
+      //   ...
+      // }
+      Object.keys(data).forEach((key) => {
+        const tokenInfo = data[key];
+        cache[tokenInfo.ticker.toLowerCase()] = {
+          usdPrice: tokenInfo.usdPrice,
+          timestamp: now
+        };
+      });
+
+      // Atualiza o horário de último fetch
+      lastFetchTime = now;
     } catch (error) {
-      console.error(`Erro ao buscar preço para o token ${token}:`, error);
+      console.error("Erro ao buscar todos os preços:", error);
       throw error;
     }
   };
 
+  /**
+   * Retorna o preço em USD de um token específico.
+   */
+  const getPrice = async (token: string): Promise<string> => {
+    // Garante que o cache está atualizado ou recarrega se expirado
+    await fetchAllPrices();
+
+    const tokenKey = token.toLowerCase();
+    if (!cache[tokenKey]) {
+      throw new Error(`Token "${token}" não encontrado no cache.`);
+    }
+
+    return cache[tokenKey].usdPrice;
+  };
+
+  /**
+   * Retorna a taxa de conversão de token1 para token2.
+   * Ex: quantos tokens2 valem 1 token1.
+   */
   const getPriceInToken = async (
     token1: string,
     token2: string
   ): Promise<string> => {
     try {
-      // Requisições em paralelo
-      const [token1Price, token2Price] = await Promise.all([
-        fetchPrice(token1),
-        fetchPrice(token2)
+      const [price1, price2] = await Promise.all([
+        getPrice(token1),
+        getPrice(token2)
       ]);
-
-      // Calcula a taxa de troca
-      return (parseFloat(token1Price) / parseFloat(token2Price)).toFixed(8);
+      return (parseFloat(price1) / parseFloat(price2)).toFixed(8);
     } catch (error) {
       console.error("Erro ao calcular a taxa de troca:", error);
       return "0";
     }
   };
 
-  return { getPriceInToken };
+  return {
+    getPriceInToken
+  };
 };
