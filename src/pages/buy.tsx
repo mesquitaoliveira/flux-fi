@@ -171,7 +171,6 @@ export default function Buy() {
         setValueTwo(
           (parseFloat(valueOne) * parseFloat(price))
             .toFixed(8)
-            .replace(".", ",")
         );
         setIsLoading(false);
       }
