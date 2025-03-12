@@ -1,5 +1,3 @@
-const API_PRICE = import.meta.env.VITE_ORACLE_API_ENDPOINT as string;
-
 type PriceCache = {
   [key: string]: { usdPrice: string; timestamp: number };
 };
