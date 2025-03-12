@@ -1,4 +1,4 @@
-const API_PRICE = import.meta.env.ORACLE_API_ENDPOINT;
+const API_PRICE = import.meta.env.VITE_ORACLE_API_ENDPOINT as string;
 
 type PriceCache = {
   [key: string]: { usdPrice: string; timestamp: number };
@@ -15,7 +15,7 @@ export const useTokenPrices = () => {
   let lastFetchTime = 0;
 
   // Intervalo de tempo, em ms, para considerar o cache válido
-  const CACHE_DURATION = 5000; // 5 segundos
+  const CACHE_DURATION = 15000; // 15 segundos
 
   /**
    * Faz a requisição do preço de todos os tokens caso o cache esteja expirado.
