@@ -29,8 +29,12 @@ export const useTokenPrices = () => {
     }
 
     try {
-      const response = await fetch(API_PRICE);
+      const response = await fetch(
+        "https://token-price-oracle.vercel.app/api/token-price?all=true"
+      );
       const data = await response.json();
+      console.log("Preços atualizados:", data);
+
 
       // Atualiza o cache com os dados retornados
       // Aqui assumimos que "data" tem formato conforme o exemplo:
